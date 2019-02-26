@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 2. Load in the dataset “zombies.csv” from my GitHub repository at https://github.com/difiore/ADA-2019. This data includes the first and last name and gender of the entire population of 1000 people who have survived the zombie apocalypse and are now ekeing out an existence somewhere on the East Coast, along with several other variables (height, weight, age, number of years of education, number of zombies they have killed, and college major see here for info on important post-zombie apocalypse majors
 
-```{r cars}
+```{r}
 library(curl)
 library(dplyr)
 f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
@@ -39,13 +39,3 @@ sam_var <- function(x) {sum((x - mean(x))^2)/(length(x)-1)}
 
 b <- select(id, d, height, weight, age, zombies_killed, years_of_education)
 c <- summarise(b, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, na.rm = TRUE))
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
