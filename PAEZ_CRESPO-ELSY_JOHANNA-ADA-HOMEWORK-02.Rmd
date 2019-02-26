@@ -1,0 +1,51 @@
+---
+title: "PAEZ_CRESPO-ELSY_JOHANNA-ADA-HOMEWORK-02"
+author: "Johanna Paez Crespo"
+date: "26/2/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## MODULE 11      
+
+<span style="color:blue">***CHALLANGE-01:***</span>
+
+1. Every Saturday, at the same time, a primatologist goes and sits in the forest in the morning and listens for titi monkey calls, counting the number of calls they hear in a 2 hour window from 5am to 7am. Based on previous knowledge, she believes that the mean number calls she will hear in that time is 15. Let X represent the appropriate Poisson random variable of the number of calls heard in each monitoring session.
+
+1.a. What is the probability that she will hear more than 8 calls during any given session?
+1.b. What is the probability that she will hear no calls in a session?
+1.c. What is the probability that she will hear exactly 3 calls in a session?
+1.d. Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30.
+1.e. Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
+1.f. Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
+
+<span style="color:blue">***CHALLANGE-02:***</span>
+
+2. Load in the dataset “zombies.csv” from my GitHub repository at https://github.com/difiore/ADA-2019. This data includes the first and last name and gender of the entire population of 1000 people who have survived the zombie apocalypse and are now ekeing out an existence somewhere on the East Coast, along with several other variables (height, weight, age, number of years of education, number of zombies they have killed, and college major see here for info on important post-zombie apocalypse majors
+
+```{r cars}
+library(curl)
+library(dplyr)
+f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+pop_var <- function(x) {sum((x - mean(x))^2)/length(x)}
+sam_var <- function(x) {sum((x - mean(x))^2)/(length(x)-1)} 
+
+b <- select(id, d, height, weight, age, zombies_killed, years_of_education)
+c <- summarise(b, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, na.rm = TRUE))
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
