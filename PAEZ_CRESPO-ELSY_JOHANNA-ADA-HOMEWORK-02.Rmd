@@ -16,11 +16,52 @@ knitr::opts_chunk$set(echo = TRUE)
 1. Every Saturday, at the same time, a primatologist goes and sits in the forest in the morning and listens for titi monkey calls, counting the number of calls they hear in a 2 hour window from 5am to 7am. Based on previous knowledge, she believes that the mean number calls she will hear in that time is 15. Let X represent the appropriate Poisson random variable of the number of calls heard in each monitoring session.
 
 1.a. What is the probability that she will hear more than 8 calls during any given session?
+
+```{r}
+x <- 8
+l <- 15
+probset <- ppois(q = x, lambda = l, lower.tail=FALSE)
+probset
+```
+
 1.b. What is the probability that she will hear no calls in a session?
+```{r}
+x <- 0
+l <- 15
+nocalls <- dpois(x = x, lambda = l)
+nocalls
+```
 1.c. What is the probability that she will hear exactly 3 calls in a session?
+```{r}
+x <- 3
+l <- 15
+threecalls <- dpois(x = x, lambda = l)
+threecalls
+```
+
 1.d. Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30.
+
+```{r}
+x <- 0:30
+l = 15
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "CALLS", ylab = "Pr(X = x)", main = paste0("Probability Mass Function\nlambda = ",l))
+```
+
 1.e. Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
+```{r}
+n <- 104
+l <- 15
+simulation <- rpois(n = n, lambda = l)
+simulation
+```
+
 1.f. Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
+
+```{r}
+hist(simulation, probability=TRUE, main = "SIMULATION HISTOGRAM", 
+     xlab = "CALLS", ylab = "PROBABILITY", xlim = c(0,30))
+```
 
 <span style="color:blue">***CHALLANGE-02:***</span>
 
@@ -29,13 +70,285 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(curl)
 library(dplyr)
-f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
-d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
-head(d)
+a <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
+b <- read.csv(a, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+DataSet <- select(b, id, height, weight, age, zombies_killed, years_of_education)
+head(DataSet)
 ```
 
-pop_var <- function(x) {sum((x - mean(x))^2)/length(x)}
-sam_var <- function(x) {sum((x - mean(x))^2)/(length(x)-1)} 
+2.a. Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education).
 
-b <- select(id, d, height, weight, age, zombies_killed, years_of_education)
-c <- summarise(b, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, na.rm = TRUE))
+```{r}
+MEANS <- summarise(DataSet, MeanH = mean(DataSet$height, na.rm = TRUE), MeanW = mean(DataSet$weight, na.rm = TRUE), MeanA = mean(DataSet$age, na.rm = TRUE), MeanZK = mean(DataSet$zombies_killed, na.rm=TRUE), MeanYE = mean(DataSet$years_of_education, na.rm=TRUE))
+head(MEANS)
+```
+
+```{r}
+sigma <- function(x) {sqrt(sum((x - mean(x))^2)/length(x))}
+sigma <- summarise(DataSet, sigmaH = sigma(DataSet$height), 
+                            sigmaW = sigma(DataSet$weight),
+                            sigmaA = sigma(DataSet$age), 
+                            sigmaZK = sigma(DataSet$zombies_killed), 
+                            sigmaYE = sigma(DataSet$years_of_education))
+sigma
+```
+
+or
+```{r}
+sigma <- sqrt(sum((x - mean(x))^2)/length(x))
+sigma <- summarise(DataSet, sigmaH = sqrt(sum((DataSet$height - mean(DataSet$height))^2)/length(DataSet$height)), 
+                            sigmaW = sqrt(sum((DataSet$weight - mean(DataSet$weight))^2)/length(DataSet$weight)),
+                            sigmaA = sqrt(sum((DataSet$age - mean(DataSet$age))^2)/length(DataSet$age)),
+                            sigmaZK = sqrt(sum((DataSet$zombies_killed - mean(DataSet$zombies_killed))^2)/length(DataSet$zombies_killed)), 
+                            sigmaYE = sqrt(sum((DataSet$years_of_education - mean(DataSet$years_of_education))^2)/length(DataSet$years_of_education)))
+sigma
+```
+
+2.b. Use {ggplot} and make boxplots of each of these variables by gender.
+```{r}
+library(ggplot2)
+pA <- ggplot(data = b, aes(x = gender, y = age))
+pA <- pA + geom_boxplot(na.rm = TRUE)
+pA <- pA + ylab("Age")
+pA
+```
+
+```{r}
+pH <- ggplot(data = b, aes(x = gender, y = height))
+pH <- pH + geom_boxplot(na.rm = TRUE)
+pH <- pH + ylab("Height")
+pH
+```
+
+```{r}   
+pZK <- ggplot(data = b, aes(x = gender, y = zombies_killed))
+pZK <- pZK + geom_boxplot(na.rm = TRUE)
+pZK <- pZK + ylab("Zombies Killed")
+pZK
+```
+
+```{r}   
+pYE <- ggplot(data = b, aes(x = gender, y = years_of_education))
+pYE <- pYE + geom_boxplot(na.rm = TRUE)
+pYE <- pYE + ylab("YearsEducation")
+pYE
+```
+
+2.c. Use {ggplot} and make scatterplots of height and weight in relation to age. Do these variables seem to be related? In what way?
+
+```{r}  
+p <- ggplot(data = b, aes(x = age, y = height))
+p <- p + xlab("Age") + ylab("Height") 
+p <- p + geom_point(na.rm = TRUE) 
+p
+```
+
+```{r}  
+p <- ggplot(data = b, aes(x = age, y = weight))
+p <- p + xlab("Age") + ylab("Weight") 
+p <- p + geom_point(na.rm = TRUE) 
+p
+```
+
+In both scatterplots variables (height and weight) seem to be realted with age. As age increase, both (height and weight) increase.
+
+2.d. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not?
+
+```{r} 
+qqnorm(b$height, main = "Normal QQ plot Height")
+qqline(b$height, col = "gray")
+```
+
+Height seem to be drawn from a normal distribution.
+
+```{r} 
+qqnorm(b$weight, main = "Normal QQ plot Weight")
+qqline(b$weight, col = "gray")
+```
+
+Weight seem to be drawn from a normal distribution.
+
+```{r} 
+qqnorm(b$age, main = "Normal QQ plot Age")
+qqline(b$age, col = "gray")
+```
+
+Age seem to be drawn from a normal distribution.
+
+```{r} 
+qqnorm(b$zombies_killed, main = "Normal QQ plot Zombies Killed")
+qqline(b$zombies_killed, col = "gray")
+```
+
+Zombies killed seem to be drawn from a poisson distribution.
+
+```{r} 
+hist(b$zombies_killed, main= "HISTOGRAM ZOMBIES KILLED", xlab="Zombies Killed")
+```
+
+```{r} 
+qqnorm(b$years_of_education, main = "Normal QQ plot Years of Education")
+qqline(b$years_of_education, col = "gray")
+```
+
+Years of education seem to be drawn from a poisson distribution.
+
+```{r} 
+hist(b$years_of_education, main= "HISTOGRAM YEARS OF EDUCATION", xlab="Years of Education")
+```
+
+2.e. Now use the sample() function to sample ONE subset of 30 zombie apocalypse survivors (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you will need to base your estimate of the CIs on some different distribution!
+
+```{r}
+sursample <- NULL
+sursample <- sample_n(DataSet, size = 30, replace = FALSE)
+head(sursample)
+```
+2.e.a. Calculating Mean for each cuantitative variable
+```{r}
+MEANS_surv <- summarise(sursample, MeanH = mean(sursample$height), MeanW = mean(sursample$weight), MeanA = mean(sursample$age), MeanZK = mean(sursample$zombies_killed), MeanYE = mean(sursample$years_of_education))
+head(MEANS_surv)
+```
+
+2.e.b. Calculating Standard Deviation for each cuantitative variable
+```{r}
+SD_surv <- summarise(sursample, SD_H = sd(sursample$height), SD_W = sd(sursample$weight), SD_A = sd(sursample$age), SD_ZK = sd(sursample$zombies_killed), SD_YE = sd(sursample$years_of_education))
+SD_surv
+```
+
+2.e.c. Calculating Standard Error for each cuantitative variable
+```{r}
+SE <- function(x) {sd(x)/sqrt(length(x))}
+SE_surv <- summarise(sursample, SE_H = SE(sursample$height), SE_W = SE(sursample$weight), SE_A = SE(sursample$age), SE_ZK = SE(sursample$zombies_killed), SE_YE = SE(sursample$years_of_education))
+SE_surv
+```
+
+2.e.d. Calculating 95% confidence intervals for each cuantitative variable
+
+####HEIGHT
+```{r}
+qnorm(0.975, mean = MEANS_surv$MeanH, sd = SD_surv$SD_H)
+up_height <- MEANS_surv$MeanH + qnorm(0.975) * SE_surv$SE_H
+low_height <- MEANS_surv$MeanH - qnorm(0.975) * SE_surv$SE_H
+CI_height <- c(low_height, up_height)
+```
+
+```{r}
+CI_height
+```
+
+```{r}
+range(sursample$height)
+```
+
+####WEIGHT
+```{r}
+qnorm(0.975, mean = MEANS_surv$MeanW, sd = SD_surv$SD_W)
+up_weight <- MEANS_surv$MeanW + qnorm(0.975) * SE_surv$SE_W
+low_weight <- MEANS_surv$MeanW - qnorm(0.975) * SE_surv$SE_W
+CI_weight <- c(low_weight, up_weight)
+```
+
+```{r}
+CI_weight
+```
+
+```{r}
+range(sursample$weight)
+```
+
+####AGE
+```{r}
+qnorm(0.975, mean = MEANS_surv$MeanA, sd = SD_surv$SD_A)
+up_age <- MEANS_surv$MeanA + qnorm(0.975) * SE_surv$SE_A
+low_age <- MEANS_surv$MeanA - qnorm(0.975) * SE_surv$SE_A
+CI_age <- c(low_age, up_age)
+```
+
+```{r}
+CI_age
+```
+
+```{r}
+range(sursample$age)
+```
+
+####ZOMBIES KILLED
+```{r}
+qpois(0.975, lambda = MEANS_surv$MeanZK)
+up_zombieskilled <- mean(MEANS_surv$MeanZK) + qpois(0.975, lambda = mean(MEANS_surv$MeanZK) * SE_surv$SE_ZK)
+low_zombieskilled <- mean(MEANS_surv$MeanZK) - qpois(0.975, lambda = mean(MEANS_surv$MeanZK) * SE_surv$SE_ZK)
+CI_zombieskilled <- c(low_zombieskilled, up_zombieskilled)
+```
+
+```{r}
+CI_zombieskilled
+```
+
+```{r}
+range(sursample$zombies_killed)
+```
+
+####YEARS OF EDUCATION
+```{r}
+qpois(0.975, lambda = MEANS_surv$MeanYE)
+up_yearsedu <- mean(MEANS_surv$MeanYE) + qpois(0.975, lambda = mean(MEANS_surv$MeanYE) * SE_surv$SE_YE)
+low_yearsedu <- mean(MEANS_surv$MeanYE) - qpois(0.975, lambda = mean(MEANS_surv$MeanYE) * SE_surv$SE_YE)
+CI_yearsedu <- c(low_yearsedu, up_yearsedu)
+```
+
+```{r}
+CI_yearsedu
+```
+
+```{r}
+range(sursample$years_of_education)
+```
+
+2.f. Now draw 99 more random samples of 30 zombie apocalypse survivors out and calculate the mean for each of the these samples. Together with the first sample you drew out, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of the sampling distribution for each variable? How do the standard deviations compare to the standard errors estimated in [2.e.]? What do these sampling distributions look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+
+####Drawing 99 more samples  
+```{r}
+k <- 99
+n <- 30
+SUR_99 <- NULL
+SUR_99meanheight <- NULL
+SUR_99SDheight <- NULL
+SUR_99SEheight <- NULL
+SUR_99meanweight <- NULL
+SUR_99SDweight <- NULL
+SUR_99SEweight <- NULL
+SUR_99meanage <- NULL
+SUR_99SDage <- NULL
+SUR_99SEage <- NULL
+SUR_99meanzombieskilled <- NULL
+SUR_99SDzombieskilled <- NULL
+SUR_99SEzombieskilled <- NULL
+SUR_99meanyearsedu <- NULL
+SUR_99SDyearsedu <- NULL
+SUR_99SEyearsedu <- NULL
+ 
+for (i in 1:99) {
+  SUR_99 <- sample_n(DataSet, size = n, replace=FALSE)
+  SUR_99meanheight[i] <- mean(SUR_99$height)
+  SUR_99SDheight[i] <- sd(SUR_99$height)
+  SUR_99SEheight[i] <- SE(SUR_99$height)
+  SUR_99meanweight[i] <- mean(SUR_99$weight)
+  SUR_99SDweight[i] <- sd(SUR_99$weight)
+  SUR_99SEweight[i] <- SE(SUR_99$weight)
+  SUR_99meanage[i] <- mean(SUR_99$age)
+  SUR_99SDage[i] <- sd(SUR_99$age)
+  SUR_99SEage[i] <- SE(SUR_99$age)
+  SUR_99meanzombieskilled[i] <- mean(SUR_99$zombies_killed)
+  SUR_99SDzombieskilled[i] <- sd(SUR_99$zombies_killed)
+  SUR_99SEzombieskilled[i] <- SE(SUR_99$zombies_killed)
+  SUR_99meanyearsedu[i] <- mean(SUR_99$years_of_education)
+  SUR_99SDyearsedu[i] <- sd(SUR_99$years_of_education)
+  SUR_99SEyearsedu[i] <- SE(SUR_99$years_of_education)
+}
+```
+
+####Creating DataFrame:
+
+
+
