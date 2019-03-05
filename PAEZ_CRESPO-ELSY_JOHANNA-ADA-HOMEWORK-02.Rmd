@@ -386,7 +386,7 @@ SE_surv
 SD_samdis
 ```
 
-<span style="color:green">***SE's of the mean and SD's of the sample were similar. However, The standard error of the mean is an estimate of how far a given sample mean is likely to be from the population mean. The standard deviation of a sample is a measure of the degree to which individual values within a sample differ from the mean for that sample. SE's of weight and zombies killed from 2.e were slightly higher than the SD's of weight and zombies of the sampling distribution***</span>
+<span style="color:green">***SE's of the mean and SD's of the sample were similar. However, The standard error of the mean give us information about how far a given sample mean is likely to be from the population mean. The standard deviation of a sample measured the degree to which individual values within a sample differ from the mean for that sample.***</span>
 
 2.f.c. What do these sampling distributions look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
 
@@ -399,7 +399,7 @@ qqnorm(sampledist$SUR_99meanheight, main = "Normal QQ plot Mean Height")
 qqline(sampledist$SUR_99meanheight, col = "gray")
 ```
 
-<span style="color:green">***Mean Height is normally distributed***</span>
+<span style="color:green">***Mean Height is not normally distributed***</span>
 
 ```{r} 
 hist(sampledist$SUR_99meanweight, main= "HISTOGRAM MEAN WEIGHT", xlab=" MeanWeight")
