@@ -45,7 +45,7 @@ threecalls
 x <- 0:30
 l = 15
 probset <- dpois(x = x, lambda = l)
-barplot(probset, names.arg = x, space = 0, xlab = "CALLS", ylab = "Pr(X = x)", main = paste0("Probability Mass Function\nlambda = ",l))
+barplot(probset, names.arg = x, space = 0, xlab = "CALLS", ylab = "Pr(X = x)", main = paste0("Probability Mass Function Calls\nlambda = ",l))
 ```
 
 1.e. Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
@@ -59,8 +59,8 @@ simulation
 1.f. Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
 
 ```{r}
-hist(simulation, probability=TRUE, main = "SIMULATION HISTOGRAM", 
-     xlab = "CALLS", ylab = "PROBABILITY", xlim = c(0,30))
+hist(simulation, main = "HISTOGRAM SIMULATION", 
+     xlab = "CALLS", ylab = "FREQUENCY", xlim = c(0,30))
 ```
 
 <span style="color:blue">***CHALLANGE-02:***</span>
@@ -79,8 +79,12 @@ head(DataSet)
 2.a. Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education).
 
 ```{r}
-MEANS <- summarise(DataSet, MeanH = mean(DataSet$height, na.rm = TRUE), MeanW = mean(DataSet$weight, na.rm = TRUE), MeanA = mean(DataSet$age, na.rm = TRUE), MeanZK = mean(DataSet$zombies_killed, na.rm=TRUE), MeanYE = mean(DataSet$years_of_education, na.rm=TRUE))
-head(MEANS)
+MEANS <- summarise(DataSet, MeanH = mean(DataSet$height, na.rm = TRUE), 
+                   MeanW = mean(DataSet$weight, na.rm = TRUE), 
+                   MeanA = mean(DataSet$age, na.rm = TRUE), 
+                   MeanZK = mean(DataSet$zombies_killed, na.rm=TRUE), 
+                   MeanYE = mean(DataSet$years_of_education, na.rm=TRUE))
+MEANS
 ```
 
 ```{r}
@@ -107,17 +111,25 @@ sigma
 2.b. Use {ggplot} and make boxplots of each of these variables by gender.
 ```{r}
 library(ggplot2)
-pA <- ggplot(data = b, aes(x = gender, y = age))
-pA <- pA + geom_boxplot(na.rm = TRUE)
-pA <- pA + ylab("Age")
-pA
-```
-
-```{r}
 pH <- ggplot(data = b, aes(x = gender, y = height))
 pH <- pH + geom_boxplot(na.rm = TRUE)
 pH <- pH + ylab("Height")
 pH
+```
+
+
+```{r}
+pW <- ggplot(data = b, aes(x = gender, y = weight))
+pW <- pW + geom_boxplot(na.rm = TRUE)
+pW <- pW + ylab("Weight")
+pW
+```
+
+```{r}
+pA <- ggplot(data = b, aes(x = gender, y = age))
+pA <- pA + geom_boxplot(na.rm = TRUE)
+pA <- pA + ylab("Age")
+pA
 ```
 
 ```{r}   
@@ -139,7 +151,8 @@ pYE
 ```{r}  
 p <- ggplot(data = b, aes(x = age, y = height))
 p <- p + xlab("Age") + ylab("Height") 
-p <- p + geom_point(na.rm = TRUE) 
+p <- p + geom_point(na.rm = TRUE)
+p <- p + geom_smooth(method = "lm", fullrange = FALSE, na.rm = TRUE)
 p
 ```
 
@@ -147,10 +160,11 @@ p
 p <- ggplot(data = b, aes(x = age, y = weight))
 p <- p + xlab("Age") + ylab("Weight") 
 p <- p + geom_point(na.rm = TRUE) 
+p <- p + geom_smooth(method = "lm", fullrange = FALSE, na.rm = TRUE)
 p
 ```
 
-In both scatterplots variables (height and weight) seem to be realted with age. As age increase, both (height and weight) increase.
+<span style="color:green">***In both scatterplots variables (height and weight) seem to be related with age. As age increase, both (height and weight) increase***</span>
 
 2.d. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not?
 
@@ -159,28 +173,28 @@ qqnorm(b$height, main = "Normal QQ plot Height")
 qqline(b$height, col = "gray")
 ```
 
-Height seem to be drawn from a normal distribution.
+<span style="color:green">***Height seem to be drawn from a normal distribution***</span>
 
 ```{r} 
 qqnorm(b$weight, main = "Normal QQ plot Weight")
 qqline(b$weight, col = "gray")
 ```
 
-Weight seem to be drawn from a normal distribution.
+<span style="color:green">***Weight seem to be drawn from a normal distribution***</span>
 
 ```{r} 
 qqnorm(b$age, main = "Normal QQ plot Age")
 qqline(b$age, col = "gray")
 ```
 
-Age seem to be drawn from a normal distribution.
+<span style="color:green">***Age seem to be drawn from a normal distribution***</span>
 
 ```{r} 
 qqnorm(b$zombies_killed, main = "Normal QQ plot Zombies Killed")
 qqline(b$zombies_killed, col = "gray")
 ```
 
-Zombies killed seem to be drawn from a poisson distribution.
+<span style="color:green">***Zombies Killed seem to be drawn from a poisson distribution***</span>
 
 ```{r} 
 hist(b$zombies_killed, main= "HISTOGRAM ZOMBIES KILLED", xlab="Zombies Killed")
@@ -191,7 +205,7 @@ qqnorm(b$years_of_education, main = "Normal QQ plot Years of Education")
 qqline(b$years_of_education, col = "gray")
 ```
 
-Years of education seem to be drawn from a poisson distribution.
+<span style="color:green">***Years of Education seem to be drawn from a poisson distribution***</span>
 
 ```{r} 
 hist(b$years_of_education, main= "HISTOGRAM YEARS OF EDUCATION", xlab="Years of Education")
@@ -204,10 +218,11 @@ sursample <- NULL
 sursample <- sample_n(DataSet, size = 30, replace = FALSE)
 head(sursample)
 ```
+
 2.e.a. Calculating Mean for each cuantitative variable
 ```{r}
-MEANS_surv <- summarise(sursample, MeanH = mean(sursample$height), MeanW = mean(sursample$weight), MeanA = mean(sursample$age), MeanZK = mean(sursample$zombies_killed), MeanYE = mean(sursample$years_of_education))
-head(MEANS_surv)
+MEANS_surv <- summarise(sursample, Mean_H = mean(sursample$height), Mean_W = mean(sursample$weight), Mean_A = mean(sursample$age), Mean_ZK = mean(sursample$zombies_killed), Mean_YE = mean(sursample$years_of_education))
+MEANS_surv
 ```
 
 2.e.b. Calculating Standard Deviation for each cuantitative variable
@@ -227,9 +242,9 @@ SE_surv
 
 ####HEIGHT
 ```{r}
-qnorm(0.975, mean = MEANS_surv$MeanH, sd = SD_surv$SD_H)
-up_height <- MEANS_surv$MeanH + qnorm(0.975) * SE_surv$SE_H
-low_height <- MEANS_surv$MeanH - qnorm(0.975) * SE_surv$SE_H
+qnorm(0.975, mean = MEANS_surv$Mean_H, sd = SD_surv$SD_H)
+up_height <- MEANS_surv$Mean_H + qnorm(0.975) * SE_surv$SE_H
+low_height <- MEANS_surv$Mean_H - qnorm(0.975) * SE_surv$SE_H
 CI_height <- c(low_height, up_height)
 ```
 
@@ -237,15 +252,11 @@ CI_height <- c(low_height, up_height)
 CI_height
 ```
 
-```{r}
-range(sursample$height)
-```
-
 ####WEIGHT
 ```{r}
-qnorm(0.975, mean = MEANS_surv$MeanW, sd = SD_surv$SD_W)
-up_weight <- MEANS_surv$MeanW + qnorm(0.975) * SE_surv$SE_W
-low_weight <- MEANS_surv$MeanW - qnorm(0.975) * SE_surv$SE_W
+qnorm(0.975, mean = MEANS_surv$Mean_W, sd = SD_surv$SD_W)
+up_weight <- MEANS_surv$Mean_W + qnorm(0.975) * SE_surv$SE_W
+low_weight <- MEANS_surv$Mean_W - qnorm(0.975) * SE_surv$SE_W
 CI_weight <- c(low_weight, up_weight)
 ```
 
@@ -253,15 +264,11 @@ CI_weight <- c(low_weight, up_weight)
 CI_weight
 ```
 
-```{r}
-range(sursample$weight)
-```
-
 ####AGE
 ```{r}
-qnorm(0.975, mean = MEANS_surv$MeanA, sd = SD_surv$SD_A)
-up_age <- MEANS_surv$MeanA + qnorm(0.975) * SE_surv$SE_A
-low_age <- MEANS_surv$MeanA - qnorm(0.975) * SE_surv$SE_A
+qnorm(0.975, mean = MEANS_surv$Mean_A, sd = SD_surv$SD_A)
+up_age <- MEANS_surv$Mean_A + qnorm(0.975) * SE_surv$SE_A
+low_age <- MEANS_surv$Mean_A - qnorm(0.975) * SE_surv$SE_A
 CI_age <- c(low_age, up_age)
 ```
 
@@ -269,15 +276,11 @@ CI_age <- c(low_age, up_age)
 CI_age
 ```
 
-```{r}
-range(sursample$age)
-```
-
 ####ZOMBIES KILLED
 ```{r}
-qpois(0.975, lambda = MEANS_surv$MeanZK)
-up_zombieskilled <- mean(MEANS_surv$MeanZK) + qpois(0.975, lambda = mean(MEANS_surv$MeanZK) * SE_surv$SE_ZK)
-low_zombieskilled <- mean(MEANS_surv$MeanZK) - qpois(0.975, lambda = mean(MEANS_surv$MeanZK) * SE_surv$SE_ZK)
+qpois(0.975, lambda = MEANS_surv$Mean_ZK)
+up_zombieskilled <- mean(MEANS_surv$Mean_ZK) + qpois(0.975, lambda = mean(MEANS_surv$Mean_ZK) * SE_surv$SE_ZK)
+low_zombieskilled <- mean(MEANS_surv$Mean_ZK) - qpois(0.975, lambda = mean(MEANS_surv$Mean_ZK) * SE_surv$SE_ZK)
 CI_zombieskilled <- c(low_zombieskilled, up_zombieskilled)
 ```
 
@@ -285,15 +288,11 @@ CI_zombieskilled <- c(low_zombieskilled, up_zombieskilled)
 CI_zombieskilled
 ```
 
-```{r}
-range(sursample$zombies_killed)
-```
-
 ####YEARS OF EDUCATION
 ```{r}
-qpois(0.975, lambda = MEANS_surv$MeanYE)
-up_yearsedu <- mean(MEANS_surv$MeanYE) + qpois(0.975, lambda = mean(MEANS_surv$MeanYE) * SE_surv$SE_YE)
-low_yearsedu <- mean(MEANS_surv$MeanYE) - qpois(0.975, lambda = mean(MEANS_surv$MeanYE) * SE_surv$SE_YE)
+qpois(0.975, lambda = MEANS_surv$Mean_YE)
+up_yearsedu <- mean(MEANS_surv$Mean_YE) + qpois(0.975, lambda = mean(MEANS_surv$Mean_YE) * SE_surv$SE_YE)
+low_yearsedu <- mean(MEANS_surv$Mean_YE) - qpois(0.975, lambda = mean(MEANS_surv$Mean_YE) * SE_surv$SE_YE)
 CI_yearsedu <- c(low_yearsedu, up_yearsedu)
 ```
 
@@ -301,54 +300,147 @@ CI_yearsedu <- c(low_yearsedu, up_yearsedu)
 CI_yearsedu
 ```
 
-```{r}
-range(sursample$years_of_education)
-```
-
 2.f. Now draw 99 more random samples of 30 zombie apocalypse survivors out and calculate the mean for each of the these samples. Together with the first sample you drew out, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of the sampling distribution for each variable? How do the standard deviations compare to the standard errors estimated in [2.e.]? What do these sampling distributions look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
 
-####Drawing 99 more samples  
+####Drawing 99 more random samples  
 ```{r}
 k <- 99
 n <- 30
 SUR_99 <- NULL
 SUR_99meanheight <- NULL
-SUR_99SDheight <- NULL
-SUR_99SEheight <- NULL
 SUR_99meanweight <- NULL
-SUR_99SDweight <- NULL
-SUR_99SEweight <- NULL
 SUR_99meanage <- NULL
-SUR_99SDage <- NULL
-SUR_99SEage <- NULL
 SUR_99meanzombieskilled <- NULL
-SUR_99SDzombieskilled <- NULL
-SUR_99SEzombieskilled <- NULL
 SUR_99meanyearsedu <- NULL
-SUR_99SDyearsedu <- NULL
-SUR_99SEyearsedu <- NULL
  
 for (i in 1:99) {
   SUR_99 <- sample_n(DataSet, size = n, replace=FALSE)
   SUR_99meanheight[i] <- mean(SUR_99$height)
-  SUR_99SDheight[i] <- sd(SUR_99$height)
-  SUR_99SEheight[i] <- SE(SUR_99$height)
   SUR_99meanweight[i] <- mean(SUR_99$weight)
-  SUR_99SDweight[i] <- sd(SUR_99$weight)
-  SUR_99SEweight[i] <- SE(SUR_99$weight)
   SUR_99meanage[i] <- mean(SUR_99$age)
-  SUR_99SDage[i] <- sd(SUR_99$age)
-  SUR_99SEage[i] <- SE(SUR_99$age)
   SUR_99meanzombieskilled[i] <- mean(SUR_99$zombies_killed)
-  SUR_99SDzombieskilled[i] <- sd(SUR_99$zombies_killed)
-  SUR_99SEzombieskilled[i] <- SE(SUR_99$zombies_killed)
   SUR_99meanyearsedu[i] <- mean(SUR_99$years_of_education)
-  SUR_99SDyearsedu[i] <- sd(SUR_99$years_of_education)
-  SUR_99SEyearsedu[i] <- SE(SUR_99$years_of_education)
 }
 ```
 
-####Creating DataFrame:
+####Creating DataFrame (from 99 random samples):
 
+```{r}
+mydata <- data.frame(SUR_99meanheight, SUR_99meanweight, 
+                     SUR_99meanage, SUR_99meanzombieskilled, SUR_99meanyearsedu)
+tail(mydata)
+```
 
+####First sample variables
+```{r}
+sample_sur <- c(MEANS_surv$Mean_H, MEANS_surv$Mean_W, MEANS_surv$Mean_A, 
+                MEANS_surv$Mean_ZK, MEANS_surv$Mean_YE)
+sample_sur
+```
 
+####Creating a sample distribution
+```{r}
+sampledist <- rbind(mydata, sample_sur)
+tail(sampledist)
+```
+
+2.f.a. What are the means and standard deviations of the sampling distribution for each variable?
+
+####MEANS
+```{r}
+MEANS_samdis <- summarise(sampledist, Mean_samdisH = mean(sampledist$SUR_99meanheight), 
+                          Mean_samdisW = mean(sampledist$SUR_99meanweight), 
+                          Mean_samdisA = mean(sampledist$SUR_99meanage), 
+                          Mean_samdisZK = mean(sampledist$SUR_99meanzombieskilled), 
+                          Mean_samdisYE = mean(sampledist$SUR_99meanyearsedu))
+MEANS_samdis
+```
+
+####STANDARD DEVIATIONS
+```{r}
+SD_samdis <- summarise(sampledist, SD_samdisH = sd(sampledist$SUR_99meanheight), 
+                       SD_samdisW = sd(sampledist$SUR_99meanweight), 
+                       SD_samdisA = sd(sampledist$SUR_99meanage), 
+                       SD_samdisZK = sd(sampledist$SUR_99meanzombieskilled), 
+                       SD_samdisYE = sd(sampledist$SUR_99meanyearsedu))
+SD_samdis
+```
+
+####STANDARD ERRORS
+```{r}
+SE <- function(x) {sd(x)/sqrt(length(x))}
+SE_samdis <- summarise(sampledist, SE_samdisH = SE(sampledist$SUR_99meanheight), 
+                       SE_samdisW = SE(sampledist$SUR_99meanweight), 
+                       SE_samdisA = SE(sampledist$SUR_99meanage), 
+                       SE_samdisZK = SE(sampledist$SUR_99meanzombieskilled), 
+                       SE_samdisYE = SE(sampledist$SUR_99meanyearsedu))
+SE_samdis
+```
+
+2.f.b. How do the standard deviations compare to the standard errors estimated in [2.e.]? 
+```{r}
+SE_surv
+```
+
+```{r}
+SD_samdis
+```
+
+<span style="color:green">***SE's of the mean and SD's of the sample were similar. However, The standard error of the mean is an estimate of how far a given sample mean is likely to be from the population mean. The standard deviation of a sample is a measure of the degree to which individual values within a sample differ from the mean for that sample. SE's of weight and zombies killed from 2.e were slightly higher than the SD's of weight and zombies of the sampling distribution***</span>
+
+2.f.c. What do these sampling distributions look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+
+```{r} 
+hist(sampledist$SUR_99meanheight, main= "HISTOGRAM MEAN HEIGHT", xlab="Mean Height")
+```
+
+```{r} 
+qqnorm(sampledist$SUR_99meanheight, main = "Normal QQ plot Mean Height")
+qqline(sampledist$SUR_99meanheight, col = "gray")
+```
+
+<span style="color:green">***Mean Height is normally distributed***</span>
+
+```{r} 
+hist(sampledist$SUR_99meanweight, main= "HISTOGRAM MEAN WEIGHT", xlab=" MeanWeight")
+```
+
+```{r} 
+qqnorm(sampledist$SUR_99meanweight, main = "Normal QQ plot Mean Weight")
+qqline(sampledist$SUR_99meanweight, col = "gray")
+```
+
+<span style="color:green">***Mean Weight is not normally distributed***</span>
+
+```{r} 
+hist(sampledist$SUR_99meanage, main= "HISTOGRAM MEAN AGE", xlab="Mean Age")
+```
+
+```{r} 
+qqnorm(sampledist$SUR_99meanage, main = "Normal QQ plot Mean Age")
+qqline(sampledist$SUR_99meanage, col = "gray")
+```
+
+<span style="color:green">***Mean Age is not normally distributed***</span>
+
+```{r} 
+hist(sampledist$SUR_99meanzombieskilled, main= "HISTOGRAM MEAN ZOMBIES KILLED", xlab="Mean Zombies Killed")
+```
+
+```{r} 
+qqnorm(sampledist$SUR_99meanzombieskilled, main = "Normal QQ plot Mean Zombies Killed")
+qqline(sampledist$SUR_99meanzombieskilled, col = "gray")
+```
+
+<span style="color:green">***Mean Zombies Killed is not normally distributed***</span>
+
+```{r} 
+hist(sampledist$SUR_99meanyearsedu, main= "HISTOGRAM MEAN YEARS OF EDUCATION", xlab="Mean Years of Education")
+```
+
+```{r} 
+qqnorm(sampledist$SUR_99meanyearsedu, main = "Normal QQ plot Mean Years of Education")
+qqline(sampledist$SUR_99meanyearsedu, col = "gray")
+```
+
+<span style="color:green">***Mean Years of Education is not normally distributed***</span>
